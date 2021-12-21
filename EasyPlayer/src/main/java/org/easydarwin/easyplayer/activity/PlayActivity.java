@@ -14,6 +14,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +25,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +44,10 @@ import org.easydarwin.easyplayer.util.FileUtil;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 播放页
@@ -182,6 +188,37 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             landscape();
         } else {
             vertical();
+        }
+
+        new NewUpApp().execute();
+    }
+
+    class NewUpApp extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .get()
+                        .url("http://192.168.1.254/?custom=1&cmd=2008&par=0")
+                        .build();
+                Response response = okHttpClient.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    Log.e("okhttp","请求成功");
+                } else {
+                    Log.e("okhttp","请求失败");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("okhttp","e: "+e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
         }
     }
 
