@@ -4,6 +4,7 @@ import android.os.Environment;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class FileUtil {
@@ -55,5 +56,21 @@ public class FileUtil {
 
         File res = new File(file, "snap.jpg");
         return res;
+    }
+
+    //遍历文件夹下所有文件
+    public static ArrayList<String> getFileName(String fileAbsolutePath) {
+        ArrayList<String> vecFile = new ArrayList<String>();
+        File file = new File(fileAbsolutePath);
+        File[] subFile = file.listFiles();
+        vecFile.clear();
+        for (int iFileLength = 0; iFileLength < subFile.length; iFileLength++) {
+            // 判断是否为文件夹
+            if (!subFile[iFileLength].isDirectory()) {
+                String filename = subFile[iFileLength].getName();
+                vecFile.add("/Mylibrary/Peak/" + filename);
+            }
+        }
+        return vecFile;
     }
 }

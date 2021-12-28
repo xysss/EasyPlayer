@@ -14,7 +14,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,21 +36,22 @@ import android.widget.LinearLayout;
 import org.easydarwin.easyplayer.R;
 import org.easydarwin.easyplayer.data.VideoSource;
 import org.easydarwin.easyplayer.databinding.ActivityMainBinding;
+import org.easydarwin.easyplayer.entity.Const;
+import org.easydarwin.easyplayer.entity.Photo;
 import org.easydarwin.easyplayer.fragments.ImageFragment;
 import org.easydarwin.easyplayer.fragments.PlayFragment;
-import org.easydarwin.easyplayer.util.FileUtil;
+import org.easydarwin.easyplayer.http.getFilesServer;
+import org.easydarwin.easyplayer.http.videoModeChange;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import java.util.List;
 
 /**
  * 播放页
- * */
+ */
 public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDoubleTapListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x111;
@@ -190,36 +190,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             vertical();
         }
 
-        new NewUpApp().execute();
-    }
 
-    class NewUpApp extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .get()
-                        .url("http://192.168.1.254/?custom=1&cmd=2008&par=0")
-                        .build();
-                Response response = okHttpClient.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    Log.e("okhttp","请求成功");
-                } else {
-                    Log.e("okhttp","请求失败");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e("okhttp","e: "+e.getMessage());
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-            super.onPostExecute(unused);
-        }
     }
 
     @Override
@@ -442,7 +413,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
     private void onVideoDisplayed() {
         mBinding.liveVideoBarTakePicture.setEnabled(true);
         mBinding.liveVideoBarRecord.setEnabled(true);
-        mBinding.msgTxt.append(String.format("[%s]\t%s\n",new SimpleDateFormat("HH:mm:ss").format(new Date()),"播放中"));
+        mBinding.msgTxt.append(String.format("[%s]\t%s\n", new SimpleDateFormat("HH:mm:ss").format(new Date()), "播放中"));
     }
 
     private void onPlayStart() {
@@ -478,7 +449,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
 
     // 截屏
     public void onTakePicture(View view) {
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        /*int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             mRenderFragment.takePicture(FileUtil.getPictureName(url).getPath());
@@ -488,22 +459,81 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             }
         } else {
             requestWriteStorage(true);
+        }*/
+
+        //new photoModeChange(PlayActivity.this).execute();
+        List<Photo> imgList = new ArrayList<Photo>();
+        int i = 0;
+        String[] arrayOfString = (new File(Const.ALBUM_PATH)).list();
+        Log.e("okhttp", "Const.ALBUM_PATH:" +Const.ALBUM_PATH);
+
+        if (arrayOfString != null && arrayOfString.length > 0) {
+            int j = arrayOfString.length;
+            while (i < j) {
+                String str = arrayOfString[i];
+                if (str != null && (str.endsWith(".JPG") || str.endsWith(".jpg"))) {
+                    Photo photo = new Photo();
+                    photo.setName(str);
+                    photo.setDate(getImgDate(str));
+                    imgList.add(photo);
+                    Log.e("okhttp", "getName:"+photo.getName());
+                }
+                i++;
+            }
         }
+
+        //测试代码 可以删除
+        /*try {
+            ArrayList<String> arrayListFile = new ArrayList();
+            arrayListFile = FileUtil.getFileName("http://192.168.1.254/MateCam/PHOTO");
+            for (int i = 0; i < arrayListFile.size(); i++) {
+                Log.e("okhttp", arrayListFile.get(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+    }
+
+    private String getImgDate(String paramString) {
+        String str1 = "";
+        String str2 = "";
+        String str3 = "";
+        if (TextUtils.isEmpty(paramString)) {
+            str3 = "1970";
+            str2 = "1";
+            paramString = "1";
+            return str3 + "/" + str2 + "/" + paramString;
+        }
+        try {
+            str3 = paramString.substring(0, 4);
+            str2 = paramString.substring(5, 7);
+            paramString = paramString.substring(7, 9);
+        } catch (Exception exception) {
+            str3 = "1970";
+            str2 = "1";
+            str1 = "1";
+        }
+        return str3 + "/" + str2 + "/" + str1;
     }
 
     // 开启/关闭录像
     public void onRecordOrStop(View view) {
+        new videoModeChange(this).execute();
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             if (mRenderFragment != null) {
                 boolean recording = mRenderFragment.onRecordOrStop();
-
                 ImageView mPlayAudio = (ImageView) view;
+                if (recording) {
+                    mPlayAudio.setImageState(recording ? new int[]{android.R.attr.state_checked} : new int[]{}, true);
+                } else {
+                    mPlayAudio.setImageState(recording ? new int[]{android.R.attr.state_checked} : new int[]{}, false);
+                }
+                /*ImageView mPlayAudio = (ImageView) view;
                 mPlayAudio.setImageState(recording ? new int[]{android.R.attr.state_checked} : new int[]{}, true);
 
                 if (recording)
-                    mPlayAudio.postDelayed(mResetRecordStateRunnable, 200);
+                    mPlayAudio.postDelayed(mResetRecordStateRunnable, 200);*/
             }
         } else {
             requestWriteStorage(false);
@@ -531,16 +561,19 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
         }*/
 
-        Intent i = new Intent(this, MediaFilesActivity.class);
+        /*Intent i = new Intent(this, MediaFilesActivity.class);
         i.putExtra("play_url", url);
-        startActivity(i);
+        startActivity(i);*/
+
+        new getFilesServer(this).execute();
+
     }
 
     /* ====================== PlayFragment ====================== */
 
     /*
-    * state：1、连接中，2、连接错误，3、连接线程退出
-    * */
+     * state：1、连接中，2、连接错误，3、连接线程退出
+     * */
     public void onEvent(PlayFragment playFragment, int state, int err, String msg) {
         mBinding.msgTxt.append(String.format("[%s]\t%s\t\n",
                 new SimpleDateFormat("HH:mm:ss").format(new Date()),

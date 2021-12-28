@@ -3,7 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/xysLearn/EasyPlayer/EasyPlayer/src/main/res/layout/activity_main.xml" value="0.17198581560283688" />
+        <entry key="..\:/xysLearn/EasyPlayer/EasyPlayer/src/main/res/drawable/live_video_bar_btn_audio.xml" value="0.20520833333333333" />
+        <entry key="..\:/xysLearn/EasyPlayer/EasyPlayer/src/main/res/layout/activity_main.xml" value="0.21" />
         <entry key="..\:/xysLearn/EasyPlayer/EasyPlayer/src/main/res/layout/fragment_play.xml" value="0.3536458333333333" />
       </map>
     </option>

@@ -42,6 +42,8 @@ import org.easydarwin.easyplayer.TheApp;
 import org.easydarwin.easyplayer.data.VideoSource;
 import org.easydarwin.easyplayer.databinding.ActivityPlayListBinding;
 import org.easydarwin.easyplayer.databinding.VideoSourceItemBinding;
+import org.easydarwin.easyplayer.http.dayServer;
+import org.easydarwin.easyplayer.http.secondServer;
 import org.easydarwin.easyplayer.util.FileUtil;
 import org.easydarwin.easyplayer.util.SPUtil;
 import org.easydarwin.update.UpdateMgr;
@@ -80,6 +82,9 @@ public class PlayListActivity extends AppCompatActivity implements View.OnClickL
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
+
+        new dayServer(PlayListActivity.this).execute();
+        new secondServer(PlayListActivity.this).execute();
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_play_list);
 
