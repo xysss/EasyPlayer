@@ -37,13 +37,14 @@ import org.easydarwin.easyplayer.R;
 import org.easydarwin.easyplayer.data.VideoSource;
 import org.easydarwin.easyplayer.databinding.ActivityMainBinding;
 import org.easydarwin.easyplayer.entity.Const;
+import org.easydarwin.easyplayer.entity.LocalVideo;
 import org.easydarwin.easyplayer.entity.Photo;
 import org.easydarwin.easyplayer.fragments.ImageFragment;
 import org.easydarwin.easyplayer.fragments.PlayFragment;
-import org.easydarwin.easyplayer.http.getFilesServer;
-import org.easydarwin.easyplayer.http.videoModeChange;
+import org.easydarwin.easyplayer.http.photoModeChange;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -461,12 +462,18 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             requestWriteStorage(true);
         }*/
 
-        //new photoModeChange(PlayActivity.this).execute();
+        new photoModeChange(PlayActivity.this).execute();
+
+        //new getFilesServer(this).execute();
+        //getPictureFiles();
+        //addFileFromDire(Const.VIDEO_PATH);
+    }
+
+    private void getPictureFiles(){
         List<Photo> imgList = new ArrayList<Photo>();
         int i = 0;
         String[] arrayOfString = (new File(Const.ALBUM_PATH)).list();
         Log.e("okhttp", "Const.ALBUM_PATH:" +Const.ALBUM_PATH);
-
         if (arrayOfString != null && arrayOfString.length > 0) {
             int j = arrayOfString.length;
             while (i < j) {
@@ -481,17 +488,50 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
                 i++;
             }
         }
+    }
 
-        //测试代码 可以删除
-        /*try {
-            ArrayList<String> arrayListFile = new ArrayList();
-            arrayListFile = FileUtil.getFileName("http://192.168.1.254/MateCam/PHOTO");
-            for (int i = 0; i < arrayListFile.size(); i++) {
-                Log.e("okhttp", arrayListFile.get(i));
+
+    private void addFileFromDire(String paramString) {
+        Log.e("okhttp","paramString:"+paramString);
+        List<LocalVideo> localVideoList=new ArrayList<>();
+        String[] videoArrayOfString = (new File(paramString)).list();
+        if (videoArrayOfString != null && videoArrayOfString.length > 0) {
+            int j = videoArrayOfString.length;
+            for (int i = 0; i < j; i++) {
+                String str = videoArrayOfString[i];
+                if (str != null && str.endsWith(".MOV")) {
+                    LocalVideo localVideo = new LocalVideo();
+                    localVideo.setName(str);
+                    localVideo.setFpath(paramString + str);
+                    localVideo.setDate(getImgDate(str));
+                    Log.e("okhttp","localVideo.Fpath:"+localVideo.getFpath());
+                    if (str.length() >= 16)
+                        if (str.indexOf("KP") >= 0) {
+                            str = str.substring(4);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                            try {
+                                localVideo.setBegainDate(simpleDateFormat.parse(str));
+                            } catch (ParseException parseException) {
+                                parseException.printStackTrace();
+                            }
+                        } else {
+                            String str1 = str.substring(0, 16);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MMdd_HHmmss");
+                            try {
+                                localVideo.setBegainDate(simpleDateFormat.parse(str1));
+                            } catch (ParseException parseException1) {
+                                parseException1.printStackTrace();
+                            }
+                        }
+                    if (paramString.equals(Const.VIDEO_PATH)) {
+                        localVideo.isClipVideo = false;
+                    } else {
+                        localVideo.isClipVideo = true;
+                    }
+                    localVideoList.add(localVideo);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+        }
     }
 
     private String getImgDate(String paramString) {
@@ -518,22 +558,24 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
 
     // 开启/关闭录像
     public void onRecordOrStop(View view) {
-        new videoModeChange(this).execute();
+        //wife 调用
+        //new videoModeChange(this).execute();
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             if (mRenderFragment != null) {
                 boolean recording = mRenderFragment.onRecordOrStop();
-                ImageView mPlayAudio = (ImageView) view;
+                //wife 调用
+                /*ImageView mPlayAudio = (ImageView) view;
                 if (recording) {
                     mPlayAudio.setImageState(recording ? new int[]{android.R.attr.state_checked} : new int[]{}, true);
                 } else {
                     mPlayAudio.setImageState(recording ? new int[]{android.R.attr.state_checked} : new int[]{}, false);
-                }
-                /*ImageView mPlayAudio = (ImageView) view;
+                }*/
+                ImageView mPlayAudio = (ImageView) view;
                 mPlayAudio.setImageState(recording ? new int[]{android.R.attr.state_checked} : new int[]{}, true);
 
                 if (recording)
-                    mPlayAudio.postDelayed(mResetRecordStateRunnable, 200);*/
+                    mPlayAudio.postDelayed(mResetRecordStateRunnable, 200);
             }
         } else {
             requestWriteStorage(false);
@@ -561,11 +603,9 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
         }*/
 
-        /*Intent i = new Intent(this, MediaFilesActivity.class);
+        Intent i = new Intent(this, MediaFilesActivity.class);
         i.putExtra("play_url", url);
-        startActivity(i);*/
-
-        new getFilesServer(this).execute();
+        startActivity(i);
 
     }
 

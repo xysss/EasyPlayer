@@ -39,8 +39,6 @@ import com.bumptech.glide.signature.StringSignature;
 import org.easydarwin.easyplayer.BuildConfig;
 import org.easydarwin.easyplayer.R;
 import org.easydarwin.easyplayer.activity.PlayActivity;
-import org.easydarwin.easyplayer.http.startRecorder;
-import org.easydarwin.easyplayer.http.stopRecorder;
 import org.easydarwin.easyplayer.util.FileUtil;
 import org.easydarwin.easyplayer.util.SPUtil;
 import org.easydarwin.easyplayer.views.AngleView;
@@ -338,7 +336,8 @@ public class PlayFragment extends Fragment implements TextureView.SurfaceTexture
     }
 
     public boolean onRecordOrStop() {
-        Activity myActivity = getActivity();
+        //wife 调用
+        /*Activity myActivity = getActivity();
         if(!isRecording) {
             new startRecorder(myActivity).execute();
             isRecording=true;
@@ -346,14 +345,15 @@ public class PlayFragment extends Fragment implements TextureView.SurfaceTexture
             new stopRecorder(myActivity).execute();
             isRecording=false;
         }
-        return isRecording;
-       /* if (!mStreamRender.isRecording()) {
+        return isRecording;*/
+
+        if (!mStreamRender.isRecording()) {
             mStreamRender.startRecord(FileUtil.getMovieName(mUrl).getPath());
             return true;
         } else {
             mStreamRender.stopRecord();
             return false;
-        }*/
+        }
     }
 
     public boolean toggleAudioEnable() {

@@ -92,7 +92,9 @@ public class pictureServer extends AsyncTask<Void, Void, Void> {
         }
         String fileName =mfilePath;
         //String fileName = UUID.randomUUID().toString() + ".JPG";
-        File myCaptureFile = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/" + fileName);
+        // /storage/emulated/0/EasyPlayerRTSP/rtsp1921681254/picture/21_12_29 10_24_14.jpg
+        String pactureUrlPath=Environment.getExternalStorageDirectory().getPath() + "/EasyPlayerRTSP/rtsp1921681254"+"/picture/";
+        File myCaptureFile = new File(pactureUrlPath + fileName);
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
         bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         bos.flush();
@@ -102,6 +104,18 @@ public class pictureServer extends AsyncTask<Void, Void, Void> {
         Uri uri = Uri.fromFile(myCaptureFile);
         intent.setData(uri);
         myActivity.sendBroadcast(intent);
+    }
+
+    private static String urlDir(String url) {
+        url = url.replace("://", "");
+        url = url.replace("/", "");
+        url = url.replace(".", "");
+
+        if (url.length() > 64) {
+            url.substring(0, 63);
+        }
+
+        return url;
     }
 
 

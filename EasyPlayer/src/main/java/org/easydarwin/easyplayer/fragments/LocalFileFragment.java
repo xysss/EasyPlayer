@@ -53,7 +53,7 @@ public class LocalFileFragment extends Fragment implements CompoundButton.OnChec
 
         String url = getArguments().getString(KEY_URL);
         mShowMp4File = getArguments().getBoolean(KEY_IS_RECORD);
-        mSuffix = mShowMp4File ? ".mp4" : ".jpg";
+        mSuffix = mShowMp4File ? ".MP4" : ".JPG";
 
         if (mShowMp4File) {
             mRoot = new File(FileUtil.getMoviePath(url));
@@ -148,7 +148,7 @@ public class LocalFileFragment extends Fragment implements CompoundButton.OnChec
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        if (path.endsWith(".jpg")) {
+        if (path.endsWith(".JPG")) {
             try {
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setDataAndType(uri, "image/*");
@@ -156,7 +156,7 @@ public class LocalFileFragment extends Fragment implements CompoundButton.OnChec
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if (path.endsWith(".mp4")) {
+        } else if (path.endsWith(".MP4")) {
             try {
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setDataAndType(uri, "video/*");

@@ -2,14 +2,10 @@ package org.easydarwin.easyplayer.fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -24,15 +20,10 @@ import android.widget.Toast;
 import org.easydarwin.easyplayer.R;
 import org.easydarwin.easyplayer.util.FileUtil;
 import org.easydarwin.easyplayer.views.OverlayCanvasView;
-import org.easydarwin.sw.JNIUtil;
 import org.easydarwin.video.Client;
 import org.easydarwin.video.EasyPlayerClient;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -80,11 +71,11 @@ public class YUVExportFragment extends PlayFragment implements EasyPlayerClient.
                 if (mStreamRender.isRecording()) {
                     mStreamRender.stopRecord();
 
-                    Toast.makeText(getActivity(), "停止录像，路径：/sdcard/test.mp4", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "停止录像，路径：/sdcard/test.MP4", Toast.LENGTH_SHORT).show();
                 } else {
-                    mStreamRender.startRecord("/sdcard/test.mp4");
+                    mStreamRender.startRecord("/sdcard/test.MP4");
 
-                    Toast.makeText(getActivity(), "开始录像，路径：/sdcard/test.mp4", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "开始录像，路径：/sdcard/test.MP4", Toast.LENGTH_SHORT).show();
                 }
             }
         });

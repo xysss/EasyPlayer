@@ -9,9 +9,11 @@ import java.util.Date;
 
 public class FileUtil {
 
+    ///storage/emulated/0/EasyPlayerRTSP/rtsp1921681254/picture/21_12_29 10_24_14.jpg
     private static String path = Environment.getExternalStorageDirectory() +"/EasyPlayerRTSP";
 
     public static String getPicturePath(String url) {
+        //return path + "/" + urlDir(url) + "/picture";
         return path + "/" + urlDir(url) + "/picture";
     }
 
@@ -19,7 +21,7 @@ public class FileUtil {
         File file = new File(getPicturePath(url));
         file.mkdirs();
 
-        File res = new File(file, new SimpleDateFormat("yy_MM_dd HH_mm_ss").format(new Date()) + ".jpg");
+        File res = new File(file, new SimpleDateFormat("yy_MM_dd HH_mm_ss").format(new Date()) + ".JPG");
         return res;
     }
 
@@ -31,7 +33,7 @@ public class FileUtil {
         File file = new File(getMoviePath(url));
         file.mkdirs();
 
-        File res = new File(file, new SimpleDateFormat("yy_MM_dd HH_mm_ss").format(new Date()) + ".mp4");
+        File res = new File(file, new SimpleDateFormat("yy_MM_dd HH_mm_ss").format(new Date()) + ".MP4");
         return res;
     }
 
@@ -53,9 +55,7 @@ public class FileUtil {
     public static File getSnapFile(String url) {
         File file = new File(getPicturePath(url));
         file.mkdirs();
-
-        File res = new File(file, "snap.jpg");
-        return res;
+        return file;
     }
 
     //遍历文件夹下所有文件

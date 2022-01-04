@@ -1,5 +1,7 @@
 package org.easydarwin.video;
 
+import static android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME;
+
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -12,8 +14,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidParameterException;
-
-import static android.media.MediaCodec.BUFFER_FLAG_KEY_FRAME;
 
 /**
  * Created by John on 2017/1/10.
@@ -43,8 +43,8 @@ public class EasyMuxer {
         if (TextUtils.isEmpty(path)){
             throw new InvalidParameterException("path should not be empty!");
         }
-        if (path.toLowerCase().endsWith(".mp4")){
-            path = path.substring(0, path.toLowerCase().lastIndexOf(".mp4"));
+        if (path.toLowerCase().endsWith(".MP4")){
+            path = path.substring(0, path.toLowerCase().lastIndexOf(".MP4"));
         }
         mFilePath = path;
         this.hasAudio = hasAudio;
@@ -52,7 +52,7 @@ public class EasyMuxer {
         Object mux = null;
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                mux = new MediaMuxer(path + "-" + index++ + ".mp4", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                mux = new MediaMuxer(path + "-" + index++ + ".MP4", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -163,7 +163,7 @@ public class EasyMuxer {
             mMuxer = null;
             mVideoTrackIndex = mAudioTrackIndex = -1;
             try {
-                mMuxer = new MediaMuxer(mFilePath + "-" + index++ + ".mp4", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                mMuxer = new MediaMuxer(mFilePath + "-" + index++ + ".MP4", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
                 addTrack(mVideoFormat, true);
                 if (mAudioFormat != null) {
                     addTrack(mAudioFormat, false);
