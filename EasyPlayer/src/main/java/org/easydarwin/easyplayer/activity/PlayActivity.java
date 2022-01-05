@@ -42,6 +42,7 @@ import org.easydarwin.easyplayer.entity.Photo;
 import org.easydarwin.easyplayer.fragments.ImageFragment;
 import org.easydarwin.easyplayer.fragments.PlayFragment;
 import org.easydarwin.easyplayer.http.photoModeChange;
+import org.easydarwin.easyplayer.util.FileUtil;
 
 import java.io.File;
 import java.text.ParseException;
@@ -461,7 +462,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
         } else {
             requestWriteStorage(true);
         }*/
-
+        FileUtil.getPictureName("rtsp://192.168.1.254").getPath();
         new photoModeChange(PlayActivity.this).execute();
 
         //new getFilesServer(this).execute();
