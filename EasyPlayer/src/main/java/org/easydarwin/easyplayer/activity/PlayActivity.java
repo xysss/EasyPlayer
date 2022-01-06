@@ -464,7 +464,8 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
         }*/
         FileUtil.getPictureName("rtsp://192.168.1.254").getPath();
         new photoModeChange(PlayActivity.this).execute();
-
+        //测试代码
+        //new downFileServer(PlayActivity.this).execute();
         //new getFilesServer(this).execute();
         //getPictureFiles();
         //addFileFromDire(Const.VIDEO_PATH);
