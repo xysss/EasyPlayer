@@ -1,5 +1,6 @@
 package org.easydarwin.easyplayer.http;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class photoModeChange extends AsyncTask<Void, Void, Void> {
         myActivity = mWeakReference.get();
     }
 
+    @SuppressLint("WrongThread")
     @Override
     protected Void doInBackground(Void... voids) {
         try {

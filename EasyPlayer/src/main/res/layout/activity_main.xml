@@ -102,6 +102,7 @@
                     android:onClick="onEnableOrDisablePlayAudio"
                     android:src="@drawable/live_video_bar_btn_audio" />
 
+
                 <ImageButton
                     android:id="@+id/live_video_bar_record"
                     android:layout_width="0dp"
@@ -121,6 +122,26 @@
                     android:gravity="center_horizontal"
                     android:onClick="onTakePicture"
                     android:src="@drawable/live_video_bar_btn_snapshot" />
+
+                <ImageButton
+                    android:id="@+id/live_video_bar_LD"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_horizontal"
+                    android:onClick="socketLD"
+                    android:src="@drawable/lum_reduce" />
+
+                <ImageButton
+                    android:id="@+id/live_video_bar_LU"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_horizontal"
+                    android:onClick="socketLU"
+                    android:src="@drawable/lum_increase" />
 
                 <ImageButton
                     android:id="@+id/enter_fullscreen"

@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.easydarwin.easyplayer.R;
 import org.easydarwin.easyplayer.data.VideoSource;
@@ -44,12 +45,20 @@ import org.easydarwin.easyplayer.fragments.PlayFragment;
 import org.easydarwin.easyplayer.http.photoModeChange;
 import org.easydarwin.easyplayer.util.FileUtil;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 播放页
@@ -74,6 +83,14 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
     private long mLastReceivedLength;
 
     private final Handler mHandler = new Handler();
+
+    // 线程池
+    private ExecutorService mThreadPool;
+    private DataOutputStream dos;
+    private DataInputStream dis;
+    private ServerSocket serverSocket = null;
+    private Socket mSocket;
+    private Boolean isSocketConnect=false;
 
     private final Runnable mTimerRunnable = new Runnable() {
         @Override
@@ -126,6 +143,12 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
             finish();
             return;
         }
+
+        // 初始化线程池
+        mThreadPool = Executors.newCachedThreadPool();
+
+        //初始化Socket连接
+        startServerSocket();
 
         // 屏幕保持不暗不关闭
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -197,6 +220,13 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
 
     @Override
     protected void onDestroy() {
+        if (dis!=null)
+            dis=null;
+        if (dos!=null)
+            dos=null;
+        if (serverSocket!=null)
+            serverSocket=null;
+
         releaseSoundPool();
         super.onDestroy();
     }
@@ -442,6 +472,70 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
         startActivity(i);
     }
 
+    /**
+     * 从参数的Socket里获取消息
+     */
+    private void startReader() {
+        mThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    dis = new DataInputStream(mSocket.getInputStream());
+                    while(true){
+                        String msgRecv = dis.readUTF();
+                        Log.e("Socket","msg from client:"+msgRecv);
+                        dos.writeUTF(msgRecv);
+                        dos.flush();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    //通过socket来给客户端发送消息
+    private void serverSendMessage(final String mServerSendMessage) {
+        mThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    dos = new DataOutputStream(mSocket.getOutputStream());
+                    dos.writeUTF(mServerSendMessage);
+                    dos.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    //开启服务
+    private void startServerSocket(){
+        Toast.makeText(PlayActivity.this,"服务已经启动！", Toast.LENGTH_SHORT).show();
+        mThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // 创建ServerSocket
+                    serverSocket = new ServerSocket(5008);
+                    InetAddress address = InetAddress.getLocalHost();
+                    Log.e("Socket","--开启服务器，监听端口 :"+address);
+                    // 监听端口，等待客户端连接
+                    while (true) {
+                        mSocket = serverSocket.accept(); //等待客户端连接
+                        Log.e("Socket","得到客户端连接：" + mSocket.getInetAddress()+":"+mSocket.getLocalPort());
+                        isSocketConnect=true;
+                        startReader();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    isSocketConnect=false;
+                }
+            }
+        });
+    }
+
     // 开启/关闭音频
     public void onEnableOrDisablePlayAudio(View view) {
         boolean enable = mRenderFragment.toggleAudioEnable();
@@ -469,6 +563,26 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.OnDo
         //new getFilesServer(this).execute();
         //getPictureFiles();
         //addFileFromDire(Const.VIDEO_PATH);
+    }
+
+    public void socketLU(View view) {
+        if (isSocketConnect){
+            serverSendMessage("LU");
+            Toast.makeText(this, "亮度加", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(this, "设备未连接", Toast.LENGTH_SHORT).show();
+            //startServerSocket();
+        }
+    }
+
+    public void socketLD(View view) {
+        if (isSocketConnect){
+            serverSendMessage("LD");
+            Toast.makeText(this, "亮度减", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, "设备未连接", Toast.LENGTH_SHORT).show();
+            //startServerSocket();
+        }
     }
 
     private void getPictureFiles(){
